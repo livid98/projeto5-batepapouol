@@ -100,7 +100,7 @@ function enviarmsg() {
        to: "Todos",
        text: input.value,
        type: "message",
-   })
+   });
    input.value= "";
    promisse.then(() => {
        const promisse = axios.get(`https://mock-api.driven.com.br/api/v6/uol/messages`);
