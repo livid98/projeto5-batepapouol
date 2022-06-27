@@ -1,6 +1,6 @@
 
 let mensagem;
-
+let nome;
 buscarmensagens();
 
 function buscarmensagens(){
@@ -44,23 +44,68 @@ if (type == "message"){
      ulchat.innerHTML = ulchat.innerHTML + mensagem;
     }
 
- if(type == "private_message"){
+ if(type == "private_message"&&(to === nome||from === nome)){
     let mensagem = `<li class= "caixa rosa">
     <div class="hora"><span>(${time})</span></div>
     <div class="texto"><span><strong>${from}</strong></span> reservadamente para <span><strong>${to}</strong>:</span><span>${text}</span></div>
     </li>`;
      ulchat.innerHTML = ulchat.innerHTML + mensagem;
     }
-}
 
 }
+ const elementoQueQueroQueApareca = document.querySelector(".caixa");
+ elementoQueQueroQueApareca[elementoQueQueroQueApareca.length-1].scrollIntoView();
+}
 
-setInterval(buscarmensagens, 3000);
-const elementoQueQueroQueApareca = document.querySelector('.caixa');
-elementoQueQueroQueApareca.scrollIntoView();
+ setInterval(buscarmensagens, 3000);
 
+
+function entrarsala() {
+   nome = prompt("Qual o seu nome? ");
+   const nomepessoa = {
+      name: `${nome}`
+   };
+   const promise = axios.post(
+      "https://mock-api.driven.com.br/api/v6/uol/participants",
+      nomepessoa
+   );
+   promise.then(verificarstatus);
+   promise.catch(alertaerro);
+
+}
 entrarsala();
-function entrarsala(){
 
+function verificarstatus() {
+   nome;
+   statususuario = {
+       name: `${nome}`
+   }
+   const promisse = axios.post(`https://mock-api.driven.com.br/api/v6/uol/status`, statususuario);
+
+}
+
+setInterval(verificarstatus,5000);
+
+function alertaerro(error) {
+   if (error.response.status === 400) {
+     nome = prompt("Digite um nome válido");
+   }
+   enviarmsg();
+}
     
+function enviarmsg() {
+   input = document.querySelector(`textarea`);
+   const promisse = axios.post(`https://mock-api.driven.com.br/api/v6/uol/messages`, {
+       from: nome,
+       to: "Todos",
+       text: input.value,
+       type: "message",
+   })
+   input.value= "";
+   promisse.then(() => {
+       const promisse = axios.get(`https://mock-api.driven.com.br/api/v6/uol/messages`);
+   })
+   promisse.catch(() => {
+       window.location.reload();
+   })
 }
